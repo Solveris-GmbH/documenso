@@ -24,15 +24,10 @@ const kurzesFormat12h: DateTimeFormatOptions = {
   hourCycle: 'h12',
 };
 
-const kurzesFormat24h: DateTimeFormatOptions = {
-  ...DateTime.DATETIME_SHORT,
-  hourCycle: 'h23',
-  timeZoneName: 'short',
-};
-
 export const formatPdfDateTimeShort = (date: Date, locale?: string | null) => {
+  // Deutsch: Protokollzeilen im selben Format wie der Kopf des Protokolls.
   if (istDeutsch(locale)) {
-    return DateTime.fromJSDate(date).setZone('Europe/Berlin').setLocale('de').toLocaleString(kurzesFormat24h);
+    return formatPdfDateTime(date, locale);
   }
 
   return DateTime.fromJSDate(date).setLocale(APP_I18N_OPTIONS.defaultLocale).toLocaleString(kurzesFormat12h);

@@ -55,6 +55,28 @@ const IMPERATIV = new RegExp(
   'giu',
 );
 
+// Runde 2 (Feinschliff für Mandanten): wörtliche Übersetzungen und Grammatikfehler,
+// die einzeln bekannt sind (Teilstring-Treffer).
+const FEINSCHLIFF = [
+  'Dokument Ablehnen', 'Zurück nach Hause', 'Unterzeichnungserfahrung', 'Betrachtet', 'betrachtet',
+  'erkennen Sie an und stimmen zu', 'Rechtlichkeit', 'Website Einstellungen', 'Kontowauthentifizierung',
+  'Beigefügte Dokument"', 'Links-Signatur', 'Unterzeichnen-Feld', 'Signer-Ereignisse', 'schief gelaufen',
+  'Oh oh!', 'überprüfen Sie und signieren Sie', 'in der Lage ist, Dokumente zuzugreifen',
+  'Dokument unterschreiben Authentifizierung',
+];
+// msgstr, die als Ganzes falsch sind (msgid -> verbotene msgstr).
+const FALSCH_GANZ = new Map([['Next', 'Nächster']]);
+// Substantiv + großgeschriebenes Verb im Infinitiv am Ende ("Konto Aktivieren").
+const VERB_GROSS = new RegExp(
+  `(?<!${L})[\\p{Lu}0-9][\\p{L}0-9-]* (${[
+    'Ablehnen', 'Aktivieren', 'Deaktivieren', 'Zurücksetzen', 'Löschen', 'Speichern', 'Erstellen', 'Hochladen',
+    'Herunterladen', 'Senden', 'Versenden', 'Unterschreiben', 'Unterzeichnen', 'Signieren', 'Bearbeiten',
+    'Entfernen', 'Hinzufügen', 'Kopieren', 'Teilen', 'Anzeigen', 'Ansehen', 'Verwalten', 'Verschieben',
+    'Stornieren', 'Abschließen', 'Bestätigen', 'Abgelehnt', 'Bestätigt',
+  ].join('|')})$`,
+  'u',
+);
+
 // Fest gesetzte Begriffe, die zufällig wie ein Imperativ aussehen (nur exakt diese msgstr).
 const AUSNAHMEN = new Set([
   // Ich-Form ("zur Verfügung stelle"), kein Imperativ.
@@ -113,6 +135,10 @@ for (const datei of readdirSync(DIR).filter((d) => d.endsWith('.po'))) {
     for (const re of [PRONOMEN, VERB_2SG, IMPERATIV]) {
       for (const m of msgstr.matchAll(re)) funde.push(m[1]);
     }
+    for (const f of FEINSCHLIFF) if (msgstr.includes(f)) funde.push(`Feinschliff:${f}`);
+    if (FALSCH_GANZ.get(msgid) === msgstr) funde.push(`Feinschliff:${msgstr}`);
+    const vg = msgstr.match(VERB_GROSS);
+    if (vg) funde.push(`Verb groß:${vg[0]}`);
     if (funde.length) {
       treffer += funde.length;
       ausgabe.push(`${rel}:${zeile}  [${funde.join(', ')}]  ${msgstr}`);
@@ -132,6 +158,6 @@ for (const datei of readdirSync(DIR).filter((d) => d.endsWith('.po'))) {
 }
 
 if (!nurZahl) for (const a of ausgabe) console.log(a);
-console.log(`Du-Treffer: ${treffer}`);
+console.log(`Treffer (Du-Formen + Feinschliff): ${treffer}`);
 console.log(`neue Platzhalter-Abweichungen: ${platzFehler} (schon in ${BASIS_TAG} vorhanden, nicht gezählt: ${platzAlt})`);
 process.exit(treffer + platzFehler > 0 ? 1 : 0);
