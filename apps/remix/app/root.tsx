@@ -176,6 +176,18 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
               <TrpcProvider>
                 {children}
 
+                {/* Solveris-Fassung: AGPL-3.0 §13, Hinweis auf den Quellcode dieser Instanz. */}
+                <footer className="py-3 text-center text-muted-foreground text-xs print:hidden">
+                  <a
+                    href="https://github.com/Solveris-GmbH/documenso"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline-offset-2 hover:underline"
+                  >
+                    {lang === 'de' ? 'Quellcode' : 'Source code'}
+                  </a>
+                </footer>
+
                 <Toaster />
               </TrpcProvider>
             </TooltipProvider>

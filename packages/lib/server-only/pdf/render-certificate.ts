@@ -10,16 +10,15 @@ import { msg } from '@lingui/core/macro';
 import type { Field, RecipientRole, Signature } from '@prisma/client';
 import { SigningStatus } from '@prisma/client';
 import Konva from 'konva';
-import { DateTime } from 'luxon';
 import { UAParser } from 'ua-parser-js';
 import { renderSVG } from 'uqr';
 
 import { NEXT_PUBLIC_WEBAPP_URL } from '../../constants/app';
-import { APP_I18N_OPTIONS } from '../../constants/i18n';
 import { getSignatureFontFamily } from '../../constants/pdf';
 import { RECIPIENT_ROLE_SIGNING_REASONS, RECIPIENT_ROLES_DESCRIPTION } from '../../constants/recipient-roles';
 import type { TDocumentAuditLogBaseSchema } from '../../types/document-audit-logs';
 import { svgToPng } from '../../utils/images/svg-to-png';
+import { formatPdfDateTime } from '../../utils/pdf-date-format';
 import { ensureFontLibrary } from './helpers';
 
 type ColumnWidths = [number, number, number];
@@ -424,21 +423,15 @@ const renderColumnThree = (options: RenderColumnOptions) => {
     {
       label: i18n._(msg`Sent`),
       value: recipient.logs.emailed
-        ? DateTime.fromJSDate(recipient.logs.emailed.createdAt)
-            .setLocale(APP_I18N_OPTIONS.defaultLocale)
-            .toFormat('yyyy-MM-dd hh:mm:ss a (ZZZZ)')
+        ? formatPdfDateTime(recipient.logs.emailed.createdAt, i18n.locale)
         : recipient.logs.sent
-          ? DateTime.fromJSDate(recipient.logs.sent.createdAt)
-              .setLocale(APP_I18N_OPTIONS.defaultLocale)
-              .toFormat('yyyy-MM-dd hh:mm:ss a (ZZZZ)')
+          ? formatPdfDateTime(recipient.logs.sent.createdAt, i18n.locale)
           : i18n._(msg`Unknown`),
     },
     {
       label: i18n._(msg`Viewed`),
       value: recipient.logs.opened
-        ? DateTime.fromJSDate(recipient.logs.opened.createdAt)
-            .setLocale(APP_I18N_OPTIONS.defaultLocale)
-            .toFormat('yyyy-MM-dd hh:mm:ss a (ZZZZ)')
+        ? formatPdfDateTime(recipient.logs.opened.createdAt, i18n.locale)
         : i18n._(msg`Unknown`),
     },
   ];
@@ -446,9 +439,7 @@ const renderColumnThree = (options: RenderColumnOptions) => {
   if (recipient.logs.rejected) {
     itemsToRender.push({
       label: i18n._(msg`Rejected`),
-      value: DateTime.fromJSDate(recipient.logs.rejected.createdAt)
-        .setLocale(APP_I18N_OPTIONS.defaultLocale)
-        .toFormat('yyyy-MM-dd hh:mm:ss a (ZZZZ)'),
+      value: formatPdfDateTime(recipient.logs.rejected.createdAt, i18n.locale),
       labelFill: textRejectedRed,
       valueFill: textRejectedRed,
     });
@@ -456,9 +447,7 @@ const renderColumnThree = (options: RenderColumnOptions) => {
     itemsToRender.push({
       label: i18n._(msg`Signed`),
       value: recipient.logs.completed
-        ? DateTime.fromJSDate(recipient.logs.completed.createdAt)
-            .setLocale(APP_I18N_OPTIONS.defaultLocale)
-            .toFormat('yyyy-MM-dd hh:mm:ss a (ZZZZ)')
+        ? formatPdfDateTime(recipient.logs.completed.createdAt, i18n.locale)
         : i18n._(msg`Unknown`),
     });
   }

@@ -1,5 +1,5 @@
 import { DOCUMENT_STATUS } from '@documenso/lib/constants/document';
-import { APP_I18N_OPTIONS, ZSupportedLanguageCodeSchema } from '@documenso/lib/constants/i18n';
+import { ZSupportedLanguageCodeSchema } from '@documenso/lib/constants/i18n';
 import { RECIPIENT_ROLES_DESCRIPTION } from '@documenso/lib/constants/recipient-roles';
 import { unsafeGetEntireEnvelope } from '@documenso/lib/server-only/admin/get-entire-document';
 import { decryptSecondaryData } from '@documenso/lib/server-only/crypto/decrypt';
@@ -7,11 +7,11 @@ import { findDocumentAuditLogs } from '@documenso/lib/server-only/document/find-
 import { getOrganisationClaimByTeamId } from '@documenso/lib/server-only/organisation/get-organisation-claims';
 import { mapSecondaryIdToDocumentId } from '@documenso/lib/utils/envelope';
 import { getTranslations } from '@documenso/lib/utils/i18n';
+import { formatPdfDateTime } from '@documenso/lib/utils/pdf-date-format';
 import { Card, CardContent } from '@documenso/ui/primitives/card';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { EnvelopeType } from '@prisma/client';
-import { DateTime } from 'luxon';
 import { redirect } from 'react-router';
 
 import appStylesheet from '~/app.css?url';
@@ -144,9 +144,7 @@ export default function AuditLog({ loaderData }: Route.ComponentProps) {
             <span className="font-medium">{_(msg`Created At`)}</span>
 
             <span className="mt-1 block">
-              {DateTime.fromJSDate(document.createdAt)
-                .setLocale(APP_I18N_OPTIONS.defaultLocale)
-                .toFormat('yyyy-MM-dd hh:mm:ss a (ZZZZ)')}
+              {formatPdfDateTime(document.createdAt, i18n.locale)}
             </span>
           </p>
 
@@ -154,9 +152,7 @@ export default function AuditLog({ loaderData }: Route.ComponentProps) {
             <span className="font-medium">{_(msg`Last Updated`)}</span>
 
             <span className="mt-1 block">
-              {DateTime.fromJSDate(document.updatedAt)
-                .setLocale(APP_I18N_OPTIONS.defaultLocale)
-                .toFormat('yyyy-MM-dd hh:mm:ss a (ZZZZ)')}
+              {formatPdfDateTime(document.updatedAt, i18n.locale)}
             </span>
           </p>
 

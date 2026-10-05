@@ -1,22 +1,15 @@
-import { APP_I18N_OPTIONS } from '@documenso/lib/constants/i18n';
 import { DOCUMENT_AUDIT_LOG_TYPE, type TDocumentAuditLog } from '@documenso/lib/types/document-audit-logs';
 import { formatDocumentAuditLogAction } from '@documenso/lib/utils/document-audit-logs';
+import { formatPdfDateTimeShort } from '@documenso/lib/utils/pdf-date-format';
 import { cn } from '@documenso/ui/lib/utils';
 import { Card, CardContent } from '@documenso/ui/primitives/card';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
-import type { DateTimeFormatOptions } from 'luxon';
-import { DateTime } from 'luxon';
 import { match, P } from 'ts-pattern';
 import { UAParser } from 'ua-parser-js';
 
 export type AuditLogDataTableProps = {
   logs: TDocumentAuditLog[];
-};
-
-const dateFormat: DateTimeFormatOptions = {
-  ...DateTime.DATETIME_SHORT,
-  hourCycle: 'h12',
 };
 
 /**
@@ -97,9 +90,7 @@ export const InternalAuditLogTable = ({ logs }: AuditLogDataTableProps) => {
                 </div>
 
                 <div className="text-muted-foreground text-sm print:text-[8pt]">
-                  {DateTime.fromJSDate(log.createdAt)
-                    .setLocale(APP_I18N_OPTIONS.defaultLocale)
-                    .toLocaleString(dateFormat)}
+                  {formatPdfDateTimeShort(log.createdAt, i18n.locale)}
                 </div>
               </div>
 
