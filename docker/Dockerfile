@@ -110,6 +110,9 @@ ENV NEXT_PRIVATE_TELEMETRY_HOST="$NEXT_PRIVATE_TELEMETRY_HOST"
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nodejs
+# Solveris-Fassung: der klassische Builder (ohne BuildKit) legt WORKDIR als root
+# an; dann scheitert `npm ci` als nodejs mit EACCES auf /app/node_modules.
+RUN mkdir -p /app && chown nodejs:nodejs /app
 
 USER nodejs
 
